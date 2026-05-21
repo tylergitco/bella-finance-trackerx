@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#fff0f6">
+<title>Bella's Budget 💸</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pink:#e91e8c;--pink-light:#fff0f6;--pink-mid:#ffd6eb;--pink-dark:#b0126a;
+  --bg:#ffffff;--bg2:#fdf5f9;--bg3:#f7eaf2;
+  --text:#1a0a12;--text2:#7a4d65;--text3:#b899aa;
+  --border:rgba(233,30,140,0.12);--border2:rgba(233,30,140,0.28);
+  --green:#2e7d32;--green-bg:#e8f5e9;--green-border:#a5d6a7;
+  --red:#c62828;--red-bg:#ffebee;--red-border:#ef9a9a;
+  --amber:#856000;--amber-bg:#fff8e1;
+  --radius-md:10px;--radius-lg:16px;--nav-h:64px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1a0a12;--bg2:#2a1020;--bg3:#3a1a2c;
+  --text:#fdf0f6;--text2:#d4a0bb;--text3:#7a4d65;
+  --border:rgba(233,30,140,0.18);--border2:rgba(233,30,140,0.38);
+  --pink-light:#3a0a22;--pink-mid:#5a1a3a;
+  --green-bg:#1a2e1b;--green-border:#388e3c;
+  --red-bg:#2a0a0a;--red-border:#c62828;
+  --amber-bg:#2a2200;
+}}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+.nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);display:flex;background:var(--bg);border-top:0.5px solid var(--border);z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:10px;padding:6px 0;font-weight:500}
+.nb i{font-size:22px}
+.nb.active{color:var(--pink);font-weight:700}
+.sec{display:none;padding:16px 14px calc(var(--nav-h) + 24px);max-width:500px;margin:0 auto}
+.sec.active{display:block}
+.page-title{font-size:22px;font-weight:800;margin-bottom:14px;letter-spacing:-.3px}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:12px}
+.lbl{font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:600}
+input[type=number],input[type=text],select,textarea{width:100%;height:44px;padding:0 12px;border-radius:var(--radius-md);border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);font-size:16px;appearance:none;-webkit-appearance:none;outline:none;font-family:inherit}
+input[type=number]:focus,input[type=text]:focus,select:focus{border-color:var(--pink)}
+textarea{height:auto;padding:10px 12px;resize:none}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:50px;border:none;border-radius:var(--radius-md);font-size:15px;font-weight:700;cursor:pointer;transition:opacity .15s,transform .1s}
+.btn:active{transform:scale(0.97);opacity:.85}
+.btn-pink{background:var(--pink);color:white}
+.btn-outline{background:var(--bg2);color:var(--text2);border:0.5px solid var(--border2);font-weight:600;min-height:42px}
+.btn-sm{height:36px;font-size:13px;border:0.5px solid var(--border2);border-radius:var(--radius-md);background:var(--bg2);color:var(--text2);cursor:pointer;padding:0 14px;font-weight:600;display:inline-flex;align-items:center;gap:5px}
+.badge{display:inline-block;font-size:12px;background:var(--bg2);border-radius:6px;padding:3px 8px;color:var(--text2);white-space:nowrap}
+.cat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.cat-btn{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:10px 8px;cursor:pointer;text-align:center;font-size:13px;color:var(--text2);font-weight:600;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:64px;justify-content:center}
+.cat-btn.selected{border-color:var(--pink);background:var(--pink-light);color:var(--pink-dark)}
+.cat-btn .cat-emoji{font-size:20px}
+.stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.stat-card{background:var(--pink-light);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:14px}
+.stat-val{font-size:24px;font-weight:800;color:var(--pink);letter-spacing:-.5px}
+.stat-lbl{font-size:12px;color:var(--text2);margin-top:3px;font-weight:600}
+.expense-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.expense-row:last-child{border-bottom:none}
+.expense-emoji{font-size:22px;width:36px;text-align:center;flex-shrink:0}
+.expense-name{flex:1;font-size:14px;font-weight:600}
+.expense-cat{font-size:11px;color:var(--text2)}
+.expense-amount{font-size:15px;font-weight:700;color:var(--red)}
+.expense-date{font-size:11px;color:var(--text3)}
+.budget-row{padding:12px 0;border-bottom:0.5px solid var(--border)}
+.budget-row:last-child{border-bottom:none}
+.budget-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.budget-name{font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px}
+.budget-amounts{font-size:13px;color:var(--text2)}
+.budget-bar-bg{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.budget-bar-fill{height:100%;border-radius:4px;transition:width .4s}
+.bill-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.bill-row:last-child{border-bottom:none}
+.bill-info{flex:1}
+.bill-name{font-size:14px;font-weight:600}
+.bill-period{font-size:12px;color:var(--text2);margin-top:1px}
+.bill-amount{font-size:16px;font-weight:700;color:var(--text)}
+.bill-rm{background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;font-size:18px;min-width:32px;min-height:32px;display:flex;align-items:center;justify-content:center}
+.hero{background:var(--pink-light);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px;margin-bottom:14px}
+.hero-name{font-size:22px;font-weight:800;color:var(--pink);letter-spacing:-.3px}
+.hero-sub{font-size:13px;color:var(--text2);margin-top:3px}
+.period-toggle{display:flex;background:var(--bg2);border-radius:var(--radius-md);padding:3px;margin-bottom:14px;gap:3px}
+.period-btn{flex:1;height:36px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:none;color:var(--text2);transition:all .15s}
+.period-btn.active{background:var(--pink);color:white}
+.scold-box{background:var(--amber-bg);border:0.5px solid rgba(133,80,0,0.2);border-radius:var(--radius-md);padding:12px 14px;margin-top:10px;font-size:13px;color:var(--amber);line-height:1.5;font-weight:500}
+.empty{text-align:center;color:var(--text2);font-size:14px;padding:2rem 1rem;line-height:1.6}
+.section-lbl{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;margin:16px 0 8px}
+.toast{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--pink);color:white;padding:12px 20px;border-radius:30px;font-size:14px;font-weight:700;z-index:200;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.over-budget{color:var(--red)!important}
+.chart-wrap{position:relative;width:100%;height:200px;margin-top:8px}
+.tab-pills{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tab-pill{height:32px;padding:0 14px;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer}
+.tab-pill.active{background:var(--pink);color:white;border-color:var(--pink)}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<nav class="nav">
+  <button class="nb active" onclick="go('home',this)" aria-label="Home"><i class="ti ti-home"></i>Home</button>
+  <button class="nb" onclick="go('log',this)" aria-label="Log"><i class="ti ti-plus"></i>Log</button>
+  <button class="nb" onclick="go('budget',this)" aria-label="Budget"><i class="ti ti-target"></i>Budget</button>
+  <button class="nb" onclick="go('bills',this)" aria-label="Bills"><i class="ti ti-receipt"></i>Bills</button>
+  <button class="nb" onclick="go('history',this)" aria-label="History"><i class="ti ti-calendar"></i>History</button>
+</nav>
+
+<!-- HOME -->
+<section id="tab-home" class="sec active">
+  <div class="hero">
+    <div class="hero-name" id="home-greeting">Hey Bella! 💸</div>
+    <div class="hero-sub" id="home-sub"></div>
+  </div>
+  <div class="period-toggle">
+    <button class="period-btn active" onclick="setPeriod('weekly',this)">This week</button>
+    <button class="period-btn" onclick="setPeriod('monthly',this)">This month</button>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-val" id="h-spent">$0</div><div class="stat-lbl" id="h-spent-lbl">Spent this week</div></div>
+    <div class="stat-card"><div class="stat-val" id="h-left">$0</div><div class="stat-lbl" id="h-left-lbl">Budget left</div></div>
+    <div class="stat-card"><div class="stat-val" id="h-bills">$0</div><div class="stat-lbl">Bills this month</div></div>
+    <div class="stat-card"><div class="stat-val" id="h-coffees">0</div><div class="stat-lbl">Coffees logged</div></div>
+  </div>
+  <div class="section-lbl">Spending breakdown</div>
+  <div class="card">
+    <div class="chart-wrap"><canvas id="home-chart" role="img" aria-label="Spending by category"></canvas></div>
+  </div>
+  <div class="card" id="recent-card">
+    <div class="lbl" style="margin-bottom:8px">Recent expenses</div>
+    <div id="recent-list"></div>
+  </div>
+</section>
+
+<!-- LOG -->
+<section id="tab-log" class="sec">
+  <p class="page-title">Log expense</p>
+  <div class="card">
+    <div class="lbl">Category</div>
+    <div class="cat-grid" id="cat-grid"></div>
+    <div class="lbl">Description <span style="font-weight:400;color:var(--text3)">(optional)</span></div>
+    <input type="text" id="log-desc" placeholder="e.g. flat white from Gotcha" style="margin-bottom:10px">
+    <div class="lbl">Amount (NZD)</div>
+    <input type="number" id="log-amount" placeholder="0.00" min="0" step="0.01" style="margin-bottom:10px">
+    <button class="btn btn-pink" onclick="logExpense()"><i class="ti ti-plus"></i> Add expense</button>
+    <div id="scold-msg"></div>
+  </div>
+</section>
+
+<!-- BUDGET -->
+<section id="tab-budget" class="sec">
+  <p class="page-title">Budgets</p>
+  <div class="period-toggle">
+    <button class="period-btn active" onclick="setBudgetPeriod('weekly',this)">Weekly</button>
+    <button class="period-btn" onclick="setBudgetPeriod('monthly',this)">Monthly</button>
+  </div>
+  <div class="card" id="budget-list"></div>
+  <div class="card" style="margin-top:4px">
+    <div class="lbl">Set a budget</div>
+    <div class="row2" style="margin-bottom:8px">
+      <div>
+        <div class="lbl">Category</div>
+        <select id="budget-cat"></select>
+      </div>
+      <div>
+        <div class="lbl">Amount ($)</div>
+        <input type="number" id="budget-amount" placeholder="0.00" min="0" step="1">
+      </div>
+    </div>
+    <button class="btn btn-pink" onclick="saveBudget()"><i class="ti ti-check"></i> Save budget</button>
+  </div>
+</section>
+
+<!-- BILLS -->
+<section id="tab-bills" class="sec">
+  <p class="page-title">Bills & regulars</p>
+  <div class="card" id="bills-list"></div>
+  <div class="card" style="margin-top:4px">
+    <div class="lbl" style="margin-bottom:10px">Add a bill</div>
+    <div class="lbl">Name</div>
+    <input type="text" id="bill-name" placeholder="e.g. Gym membership" style="margin-bottom:8px">
+    <div class="row2">
+      <div>
+        <div class="lbl">Amount ($)</div>
+        <input type="number" id="bill-amount" placeholder="0.00" min="0" step="0.01">
+      </div>
+      <div>
+        <div class="lbl">Period</div>
+        <select id="bill-period">
+          <option value="weekly">Weekly</option>
+          <option value="monthly" selected>Monthly</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-pink" style="margin-top:8px" onclick="addBill()"><i class="ti ti-plus"></i> Add bill</button>
+  </div>
+</section>
+
+<!-- HISTORY -->
+<section id="tab-history" class="sec">
+  <p class="page-title">History</p>
+  <div class="tab-pills">
+    <button class="tab-pill active" onclick="filterHistory('all',this)">All</button>
+    <button class="tab-pill" onclick="filterHistory('coffee',this)">Coffees</button>
+    <button class="tab-pill" onclick="filterHistory('treats',this)">Treats</button>
+    <button class="tab-pill" onclick="filterHistory('going-out',this)">Going out</button>
+    <button class="tab-pill" onclick="filterHistory('eating-out',this)">Eating out</button>
+  </div>
+  <div class="card" id="history-list"></div>
+</section>
+
+<script>
+const CATS=[
+  {id:'coffee',label:'Coffees',emoji:'☕'},
+  {id:'treats',label:'Treats & snacks',emoji:'🍫'},
+  {id:'eating-out',label:'Eating out',emoji:'🍕'},
+  {id:'going-out',label:'Going out',emoji:'🥂'},
+  {id:'shopping',label:'Shopping',emoji:'🛍️'},
+  {id:'groceries',label:'Groceries',emoji:'🛒'},
+  {id:'transport',label:'Transport',emoji:'🚌'},
+  {id:'other',label:'Other',emoji:'💳'},
+];
+
+const SCOLDS={
+  coffee:[
+    "Another coffee, Bella? Your bank account is TIRED. ☕😭",
+    "Okay but have you considered... making one at home? Just once?",
+    "The baristas know your name AND your order. That's not a flex.",
+    "Logged! But Bella... this is getting concerning 👀",
+    "Your future self is watching this and crying into her instant coffee.",
+  ],
+  treats:[
+    "A treat?? In THIS economy?? (logged, no judgment... okay some judgment)",
+    "Bella. BELLA. The treats are winning.",
+    "Noted! Your treats budget is feeling a bit attacked right now.",
+    "One treat won't hurt, said Bella, for the 4th time this week.",
+    "Logged! The treat-to-savings ratio is not looking cute rn 💅",
+  ],
+  'going-out':[
+    "A night out! Love that for you. Hate that for your wallet.",
+    "Logged! Future Bella says hi from her savings account (just kidding she has none)",
+    "Going out logged! Was it worth it? (Don't answer that.)",
+    "Your bank called. It's not angry, just disappointed.",
+    "Logged! Remember: the vibes are free, the drinks are not.",
+  ],
+  'eating-out':[
+    "Eating out again! There IS food at home, Bella... 👀",
+    "Logged! Just so you know, a meal prep session costs like $30 total.",
+    "Your kitchen misses you. Like genuinely, it's been a while.",
+    "Noted! No judgment. Okay a little judgment.",
+    "Logged! The restaurant industry thanks you for your service.",
+  ],
+  shopping:[
+    "A little shopping trip! How fun! How expensive!",
+    "Logged. Did you NEED it or did you WANT it? (rhetorical question)",
+    "Bella. Step away from the checkout. Logged.",
+    "Noted! Your wardrobe is thriving. Your savings less so.",
+    "Logged! Future Bella is wearing this outfit and still broke.",
+  ],
+  groceries:["Groceries! This is acceptable. Well done. 🥦","Look at you, adulting! Groceries logged!","Responsible spending! We love to see it ✅","Groceries logged! See, you CAN be good with money."],
+  transport:["Transport logged! Getting places is important. Fine.","Logged! At least you're going somewhere.",],
+  other:["Logged! Mystery expense. Suspicious but okay.","Noted! We'll allow it. This time."],
+};
+
+const DEFAULT_BILLS=[
+  {id:'rent',name:'Rent',amount:0,period:'weekly'},
+  {id:'phone',name:'Phone plan',amount:0,period:'monthly'},
+];
+
+function load(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch{return def}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+
+let expenses=load('bella_expenses',[]);
+let budgets=load('bella_budgets',{weekly:{},monthly:{}});
+let bills=load('bella_bills',DEFAULT_BILLS);
+let homePeriod='weekly';
+let budgetPeriod='weekly';
+let selectedCat='coffee';
+let histFilter='all';
+let homeChart=null;
+
+function go(tab,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+  if(tab==='home')renderHome();
+  if(tab==='budget')renderBudget();
+  if(tab==='bills')renderBills();
+  if(tab==='history')renderHistory();
+}
+
+function showToast(msg,dur=3000){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+function setPeriod(p,btn){
+  homePeriod=p;
+  document.querySelectorAll('.period-toggle .period-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHome();
+}
+function setBudgetPeriod(p,btn){
+  budgetPeriod=p;
+  document.querySelectorAll('#tab-budget .period-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBudget();
+}
+
+function getPeriodExpenses(period){
+  const now=new Date();
+  return expenses.filter(e=>{
+    const d=new Date(e.date);
+    if(period==='weekly'){
+      const weekAgo=new Date(now);weekAgo.setDate(now.getDate()-7);
+      return d>=weekAgo;
+    } else {
+      return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+    }
+  });
+}
+
+function fmtMoney(n){return '$'+Math.abs(n).toFixed(2)}
+
+function renderHome(){
+  const exps=getPeriodExpenses(homePeriod);
+  const total=exps.reduce((a,e)=>a+e.amount,0);
+  const budgetTotal=Object.values(budgets[homePeriod]).reduce((a,v)=>a+v,0);
+  const left=budgetTotal-total;
+  const billsTotal=bills.reduce((a,b)=>a+(b.period==='monthly'?b.amount:b.amount*4.33),0);
+  const coffeeCount=expenses.filter(e=>e.cat==='coffee').length;
+
+  document.getElementById('h-spent').textContent=fmtMoney(total);
+  document.getElementById('h-spent-lbl').textContent=`Spent this ${homePeriod==='weekly'?'week':'month'}`;
+  document.getElementById('h-left').textContent=budgetTotal>0?(left<0?'-':'')+fmtMoney(Math.abs(left)):'—';
+  document.getElementById('h-left-lbl').textContent=`${homePeriod==='weekly'?'Weekly':'Monthly'} budget left`;
+  if(left<0)document.getElementById('h-left').classList.add('over-budget');
+  else document.getElementById('h-left').classList.remove('over-budget');
+  document.getElementById('h-bills').textContent=fmtMoney(billsTotal);
+  document.getElementById('h-coffees').textContent=coffeeCount;
+
+  const hour=new Date().getHours();
+  const greet=hour<12?'Good morning':'Good afternoon';
+  document.getElementById('home-greeting').textContent=`${greet}, Bella! 💸`;
+  const msgs=['How\'s the wallet holding up?','Spending responsibly? Let\'s check.','Your money, your rules. (Mostly.)'];
+  document.getElementById('home-sub').textContent=msgs[Math.floor(Math.random()*msgs.length)];
+
+  // Chart
+  const catTotals={};
+  CATS.forEach(c=>catTotals[c.id]=0);
+  exps.forEach(e=>catTotals[e.cat]=(catTotals[e.cat]||0)+e.amount);
+  const nonZero=CATS.filter(c=>catTotals[c.id]>0);
+  if(homeChart){homeChart.destroy();homeChart=null;}
+  if(nonZero.length){
+    const isDark=matchMedia('(prefers-color-scheme:dark)').matches;
+    const colors=['#e91e8c','#f06292','#ad1457','#f48fb1','#880e4f','#ec407a','#c2185b','#d81b60'];
+    homeChart=new Chart(document.getElementById('home-chart'),{
+      type:'doughnut',
+      data:{
+        labels:nonZero.map(c=>c.label),
+        datasets:[{data:nonZero.map(c=>catTotals[c.id]),backgroundColor:colors.slice(0,nonZero.length),borderWidth:0}]
+      },
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},color:isDark?'#d4a0bb':'#7a4d65',padding:10,boxWidth:10}}}}
+    });
+  } else {
+    document.getElementById('home-chart').getContext('2d').clearRect(0,0,999,999);
+  }
+
+  // Recent
+  const recent=[...expenses].reverse().slice(0,5);
+  const rl=document.getElementById('recent-list');
+  if(!recent.length){rl.innerHTML='<div class="empty">No expenses yet! Go treat yourself... wait, don\'t.</div>';return;}
+  rl.innerHTML=recent.map(e=>{
+    const cat=CATS.find(c=>c.id===e.cat)||CATS[7];
+    const d=new Date(e.date);
+    return`<div class="expense-row">
+      <div class="expense-emoji">${cat.emoji}</div>
+      <div style="flex:1"><div class="expense-name">${e.desc||cat.label}</div><div class="expense-cat">${cat.label} · ${d.toLocaleDateString('en-NZ',{day:'numeric',month:'short'})}</div></div>
+      <div class="expense-amount">${fmtMoney(e.amount)}</div>
+    </div>`;
+  }).join('');
+}
+
+function buildCatGrid(){
+  const g=document.getElementById('cat-grid');
+  g.innerHTML=CATS.map(c=>`
+    <button class="cat-btn${c.id===selectedCat?' selected':''}" onclick="selectCat('${c.id}')">
+      <span class="cat-emoji">${c.emoji}</span>
+      <span>${c.label}</span>
+    </button>`).join('');
+}
+
+function selectCat(id){
+  selectedCat=id;
+  buildCatGrid();
+}
+
+function logExpense(){
+  const amount=parseFloat(document.getElementById('log-amount').value);
+  const desc=document.getElementById('log-desc').value.trim();
+  if(!amount||amount<=0){showToast('Enter an amount first!');return;}
+  const exp={id:Date.now(),cat:selectedCat,amount,desc,date:new Date().toISOString()};
+  expenses.push(exp);
+  save('bella_expenses',expenses);
+  document.getElementById('log-amount').value='';
+  document.getElementById('log-desc').value='';
+
+  const msgs=SCOLDS[selectedCat]||SCOLDS.other;
+  const msg=msgs[Math.floor(Math.random()*msgs.length)];
+  const scold=document.getElementById('scold-msg');
+  scold.innerHTML=`<div class="scold-box">${msg}</div>`;
+  setTimeout(()=>scold.innerHTML='',5000);
+
+  const budget=budgets.weekly[selectedCat]||0;
+  if(budget>0){
+    const weekSpent=getPeriodExpenses('weekly').filter(e=>e.cat===selectedCat).reduce((a,e)=>a+e.amount,0)+amount;
+    if(weekSpent>budget)showToast(`Over your ${CATS.find(c=>c.id===selectedCat).label} budget! 😬`,3500);
+  }
+}
+
+function buildBudgetSelect(){
+  const sel=document.getElementById('budget-cat');
+  sel.innerHTML=CATS.map(c=>`<option value="${c.id}">${c.emoji} ${c.label}</option>`).join('');
+}
+
+function saveBudget(){
+  const cat=document.getElementById('budget-cat').value;
+  const amount=parseFloat(document.getElementById('budget-amount').value);
+  if(!amount||amount<=0){showToast('Enter a budget amount!');return;}
+  budgets[budgetPeriod][cat]=amount;
+  save('bella_budgets',budgets);
+  document.getElementById('budget-amount').value='';
+  showToast('Budget saved!');
+  renderBudget();
+}
+
+function renderBudget(){
+  const exps=getPeriodExpenses(budgetPeriod);
+  const el=document.getElementById('budget-list');
+  const hasBudgets=Object.keys(budgets[budgetPeriod]).length>0;
+  if(!hasBudgets){el.innerHTML='<div class="empty">No budgets set yet! Add one below.</div>';return;}
+  el.innerHTML=CATS.map(c=>{
+    const budget=budgets[budgetPeriod][c.id];
+    if(!budget)return'';
+    const spent=exps.filter(e=>e.cat===c.id).reduce((a,e)=>a+e.amount,0);
+    const pct=Math.min(Math.round(spent/budget*100),100);
+    const over=spent>budget;
+    const barColor=over?'#c62828':pct>75?'#f57c00':'#e91e8c';
+    return`<div class="budget-row">
+      <div class="budget-top">
+        <div class="budget-name">${c.emoji} ${c.label}</div>
+        <div class="budget-amounts ${over?'over-budget':''}">${fmtMoney(spent)} / ${fmtMoney(budget)}</div>
+      </div>
+      <div class="budget-bar-bg"><div class="budget-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      ${over?`<div style="font-size:12px;color:var(--red);margin-top:4px;font-weight:600">Over budget by ${fmtMoney(spent-budget)}! 😬</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderBills(){
+  const el=document.getElementById('bills-list');
+  if(!bills.length){el.innerHTML='<div class="empty">No bills added yet.</div>';return;}
+  el.innerHTML=bills.map((b,i)=>`
+    <div class="bill-row">
+      <div class="bill-info">
+        <div class="bill-name">${b.name}</div>
+        <div class="bill-period">${b.period==='monthly'?'Every month':'Every week'}</div>
+      </div>
+      ${b.amount>0?`<div class="bill-amount">${fmtMoney(b.amount)}</div>`:''}
+      <input type="number" placeholder="$0.00" value="${b.amount||''}" min="0" step="0.01"
+        style="width:90px;height:36px;font-size:14px;margin-right:4px"
+        onchange="updateBill(${i},this.value)">
+      <button class="bill-rm" onclick="removeBill(${i})" aria-label="Remove"><i class="ti ti-x"></i></button>
+    </div>`).join('');
+  const monthly=bills.filter(b=>b.period==='monthly').reduce((a,b)=>a+b.amount,0);
+  const weekly=bills.filter(b=>b.period==='weekly').reduce((a,b)=>a+b.amount,0);
+  el.innerHTML+=`<div style="padding:12px 0 4px;display:flex;justify-content:space-between;font-size:13px;color:var(--text2);font-weight:600">
+    <span>Monthly total</span><span>${fmtMoney(monthly)}</span></div>
+    <div style="padding:4px 0;display:flex;justify-content:space-between;font-size:13px;color:var(--text2);font-weight:600">
+    <span>Weekly total</span><span>${fmtMoney(weekly)}</span></div>`;
+}
+
+function updateBill(i,val){
+  bills[i].amount=parseFloat(val)||0;
+  save('bella_bills',bills);
+  renderBills();
+}
+
+function removeBill(i){
+  bills.splice(i,1);
+  save('bella_bills',bills);
+  renderBills();
+}
+
+function addBill(){
+  const name=document.getElementById('bill-name').value.trim();
+  const amount=parseFloat(document.getElementById('bill-amount').value)||0;
+  const period=document.getElementById('bill-period').value;
+  if(!name){showToast('Enter a bill name!');return;}
+  bills.push({id:Date.now(),name,amount,period});
+  save('bella_bills',bills);
+  document.getElementById('bill-name').value='';
+  document.getElementById('bill-amount').value='';
+  showToast('Bill added!');
+  renderBills();
+}
+
+function filterHistory(f,btn){
+  histFilter=f;
+  document.querySelectorAll('.tab-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHistory();
+}
+
+function renderHistory(){
+  const el=document.getElementById('history-list');
+  let filtered=histFilter==='all'?expenses:expenses.filter(e=>e.cat===histFilter);
+  if(!filtered.length){el.innerHTML='<div class="empty">No expenses here yet!</div>';return;}
+  el.innerHTML=[...filtered].reverse().map(e=>{
+    const cat=CATS.find(c=>c.id===e.cat)||CATS[7];
+    const d=new Date(e.date);
+    return`<div class="expense-row">
+      <div class="expense-emoji">${cat.emoji}</div>
+      <div style="flex:1">
+        <div class="expense-name">${e.desc||cat.label}</div>
+        <div class="expense-cat">${cat.label} · ${d.toLocaleDateString('en-NZ',{weekday:'short',day:'numeric',month:'short'})}</div>
+      </div>
+      <div>
+        <div class="expense-amount">${fmtMoney(e.amount)}</div>
+        <button style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;float:right" onclick="deleteExpense('${e.id}')"><i class="ti ti-trash" style="font-size:14px"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deleteExpense(id){
+  expenses=expenses.filter(e=>e.id!=id);
+  save('bella_expenses',expenses);
+  renderHistory();
+}
+
+buildCatGrid();
+buildBudgetSelect();
+renderHome();
+renderBills();
+</script>
+</body>
+</html>
